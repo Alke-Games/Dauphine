@@ -1,3 +1,11 @@
+/* Dauphine
+ * Universidade de Brasília - FGA
+ * Técnicas de Programação, 2/2017
+ * @Enemy.h
+ * File responsible for implementing the characteristics of common enemies (except the boss).
+ * License: Copyright (C) 2014 Alke Games. 
+ */
+
 #ifndef INCLUDE_ENEMY_H
 #define INCLUDE_ENEMY_H
 
@@ -8,10 +16,16 @@
 
 class StateEnemy;
 
-class Enemy : public DynamicEntity {
+/* 
+ * Enemies characteristics.
+ */
+class Enemy : public DynamicEntity 
+{
 
 	public:
-		enum EStates : uint8_t {
+		enum EStates : uint8_t 
+		{
+
 			IDLE = 0,
 			AERIAL,
 			PATROLLING,
@@ -19,18 +33,19 @@ class Enemy : public DynamicEntity {
 			ALERT,
 			ATTACK,
 			DEAD
+
 		};
 
 		/**
 		* The constructor.
 		*/
-		Enemy(const double x_, const double y_, const std::string& path_, const bool patrol_,
-			const double patrolLength_);
+		Enemy ( const double x_, const double y_, const std::string& path_, const bool patrol_,
+			const double patrolLength_ );
 
 		/**
 		* The destructor.
 		*/
-		virtual ~Enemy();
+		virtual ~Enemy ();
 
 		/**
 		* Updates the player.
@@ -38,7 +53,7 @@ class Enemy : public DynamicEntity {
 		* @param dt_ : Delta time. Time elapsed between one frame and the other, independent
 		* 	of processing speed.
 		*/
-		virtual void update(const double dt_);
+		virtual void update ( const double dt_ );
 
 		/**
 		* Renders the player.
@@ -47,14 +62,14 @@ class Enemy : public DynamicEntity {
 		* @param cameraX_ : The x position of the camera.
 		* @param cameraY_ : The y position of the camera.
 		*/
-		virtual void render(const double cameraX_, const double cameraY_);
+		virtual void render ( const double cameraX_, const double cameraY_ );
 		
-		void initializeStates();
-		void destroyStates();
-		void changeState(const EStates state_);
-		Animation* getAnimation();
-		bool isDead();
-		void setDead(bool isDead_);
+		void initializeStates ();
+		void destroyStates ();
+		void changeState ( const EStates state_ );
+		Animation* getAnimation ();
+		bool isDead ();
+		void setDead ( bool isDead_ );
 
 		static double px;
 		static double py;
@@ -69,12 +84,16 @@ class Enemy : public DynamicEntity {
 		unsigned int life;
 	
 	private:
-		virtual void updateBoundingBox();
-		virtual void handleCollision(std::array<bool, CollisionSide::SOLID_TOTAL> detections_);
-		void forceMaxSpeed();
-		StateEnemy* currentState;
-		Animation* animation;
-		std::map<EStates, StateEnemy*> statesMap;
+
+		virtual void updateBoundingBox ();
+		virtual void handleCollision ( std::array < bool, CollisionSide::SOLID_TOTAL > detections_ );
+
+		void forceMaxSpeed ();
+
+		StateEnemy *currentState;
+		Animation *animation;
+
+		std::map < EStates, StateEnemy *> statesMap;
 		bool dead;
 
 };

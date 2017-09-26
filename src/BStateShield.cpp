@@ -1,24 +1,49 @@
+/* Dauphine
+* Universidade de Brasília - FGA
+* Técnicas de Programação, 2/2017
+* @BStateShield.cpp
+* The state of the shield of the boss.
+* Class that controll the shield of the boss.
+* License: Copyright (C) 2014 Alke Games.
+*/
+
 #include "BStateShield.h"
 #include "Logger.h"
 
-void BStateShield::enter(){
-	Log(DEBUG) << "STATE SHIELD BOSS";
-	this->boss->getAnimation()->changeAnimation(0, 0, 1, false, 0);
+/**
+* Shows the animation of the boss getting a shield.
+*/
+void BStateShield::enter()
+{
+	Log( DEBUG ) << "STATE SHIELD BOSS";
+	this -> boss -> getAnimation() -> changeAnimation( 0, 0, 1, false, 0 );
 	this->boss->hasShield = true;
 }
 
-void BStateShield::exit(){
+/**
+* Shows the boss losing a shield.
+*/
+void BStateShield::exit()
+{
 
 }
 
-void BStateShield::update(const double dt_){
-	((void)dt_); // Unused.
+/**
+* Changing the state of the boss shield.
+*/
+void BStateShield::update( const double dt_ )
+{
+	( ( void )dt_ ); // Unused.
 
-	this->boss->changeState(Boss::BStates::IDLE);
+	this -> boss -> changeState( Boss::BStates::IDLE );
 }
 
-BStateShield::BStateShield(Boss* const boss_) :
-	StateBoss(boss_)
+/**
+* The constructor.
+* Initializes the attributes.
+*/
+BStateShield::BStateShield( Boss* const boss_ ) :
+	StateBoss( boss_ )
 {
 
 }

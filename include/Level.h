@@ -18,7 +18,8 @@
 * Abstract class for levels.
 * Contains a background, player and a camera.
 */
-class Level : public StateGame {
+class Level : public StateGame 
+{
 	
 	public:	
 		/**
@@ -47,37 +48,37 @@ class Level : public StateGame {
 		/**
 		* @param player_ : Sets the player for the level.
 		*/
-		virtual void setPlayer(Player* const player_);
+		virtual void setPlayer ( Player *const player_ );
 
 		/**
 		* @param camera_ : Sets the camera for the level.
 		* @note You should only set the camera after setting the player. Will warn if you
 		* 	didn't.
 		*/
-		virtual void setCamera(Camera* const camera_);
+		virtual void setCamera ( Camera *const camera_ );
 
-		virtual void setBoss(Boss* const boss);
+		virtual void setBoss ( Boss *const boss );
 
 		virtual void clearEnemies();
 		virtual void clearDocuments();
 
-		void changeCheckpoints(int NUMBER_OF_CHECKPOINTS_, std::vector <double> checkpointsX_,
-		std::vector <double> checkpointsY_);
+		void changeCheckpoints ( int NUMBER_OF_CHECKPOINTS_, std::vector <double> checkpointsX_,
+		std::vector <double> checkpointsY_ );
 
 		unsigned int width; /**< Width that defines the horizontal limits. */
 		unsigned int height; /**< Height that defines the vertical limits. */
 
-		Player* player; /**< The direct reference to player, even though its in the list. */
-		Camera* camera; /**< The current camera for that level. */
-		PlayerHUD* playerHud;
+		Player *player; /**< The direct reference to player, even though its in the list. */
+		Camera *camera; /**< The current camera for that level. */
+		PlayerHUD *playerHud;
 
-		Boss* boss;
+		Boss *boss;
 
-		TileMap* tileMap;
-		QuadTree* quadTree;
+		TileMap *tileMap;
+		QuadTree *quadTree;
 
-		Sprite* background;
-		Sprite* backgroundTop;
+		Sprite *background;
+		Sprite *backgroundTop;
 		std::vector <Sprite*> checkpoints;
 		std::vector <double> checkpointsX;
 		std::vector <double> checkpointsY;

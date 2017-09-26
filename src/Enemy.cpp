@@ -1,8 +1,16 @@
+/* Dauphine
+ * Universidade de Brasília - FGA
+ * Técnicas de Programação, 2/2017
+ * @Enemy.cpp
+ * File responsible for implementing the enemies of the game (except the boss). 
+ * They define the basic image and characteristics of the enemy, upgrade, destruction, collision among others.
+ * License: Copyright (C) 2014 Alke Games.
+ */
+
 #include "Enemy.h"
 #include "Logger.h"
 #include "LuaScript.h"
 #include <cmath>
-
 #include "EStateIdle.h"
 #include "EStatePatrolling.h"
 #include "EStateAerial.h"
@@ -10,88 +18,113 @@
 #include "EStateAlert.h"
 #include "EStateAttack.h"
 #include "EStateDead.h"
-
 #include "Window.h"
 
-#define ADD_STATE_EMPLACE(stateEnum, stateClass) this->statesMap.emplace(stateEnum, new stateClass(this))
-#define ADD_STATE_INSERT(stateEnum, stateClass) this->statesMap.insert(std::make_pair<EStates, StateEnemy*>(stateEnum, new stateClass(this)));
+#define ADD_STATE_EMPLACE(stateEnum, stateClass) this -> statesMap.emplace(stateEnum, new stateClass( this ))
+#define ADD_STATE_INSERT(stateEnum, stateClass) this -> statesMap.insert(std::make_pair<EStates, StateEnemy*>(stateEnum, new stateClass( this )));
 
-double Enemy::px = 0.0;
+//Declaring and initialing position enemy in the origin of the x axis 
+double Enemy::px = 0.0;                            
+//Declaring and initialing position enemy in the origin of the y axis
 double Enemy::py = 0.0;
+//Declaring the enemy with 3 life quantity
 unsigned int Enemy::pLife = 3;
+//Check if enemy is position vulnerable
 bool Enemy::pVulnerable = false;
+//Declaring the value for range dangerous of proximity for a enemy
 double Enemy::alertRange = 300.0;
+//Double value existing at pvulnerable 
 double Enemy::curiousRange = 600.0;
 
-Enemy::Enemy(const double x_, const double y_, const std::string& path_, const bool patrol_,
-	const double patrolLength_) :
-
-	DynamicEntity(x_, y_, path_),
-	originalX(x_),
-	patrol(patrol_),
-	patrolLength(patrolLength_),
-	life(100),
-	currentState(nullptr),
-	animation(nullptr),
-	statesMap(),
-	dead(false)
+/*
+ * Method used to create all characteristics Enemy
+ * @param x_ : Position on the x axis of the enemy
+ * @param y_ : Position on the y axis of the enemy
+ * @param path_ : The path to the desired sprite
+ * @param patrol_ : Defines if the enemy patrols.
+ * @param patrolLength_ : Defines the space traveled by the patrolman
+ */
+Enemy::Enemy( const double x_, const double y_, const std::string& path_, const bool patrol_,
+	const double patrolLength_ ) : DynamicEntity(x_, y_, path_), originalX(x_), patrol(patrol_),
+  patrolLength(patrolLength_), life(100), currentState(nullptr), animation(nullptr), statesMap(), dead(false)
 {
+	// Initialize all the states in Enemy.
 	initializeStates();
 
-	this->speed = 3.0;
-
+	this -> speed = 3.0;
+  
+  //Getting information from lua script.
 	LuaScript luaEnemy("lua/Enemy.lua");
-	this->width = luaEnemy.unlua_get<int>("enemy.dimensions.width");
-	this->height = luaEnemy.unlua_get<int>("enemy.dimensions.height");
+	// Setting the level width/height.
+	this -> width = luaEnemy.unlua_get<int>("enemy.dimensions.width");
+	this -> height = luaEnemy.unlua_get<int>("enemy.dimensions.height");
+	this -> animation = new Animation(0, 0, this -> width, this -> height, 0, false);
 
-	this->animation = new Animation(0, 0, this->width, this->height, 0, false);
-
-	if(this->patrol){
-		this->currentState = this->statesMap.at(PATROLLING);
-	}
-	else{
-		this->currentState = this->statesMap.at(IDLE);
-	}
+  //Condition to attribute the states map to current state.
+	if ( this -> patrol )
+	{
+		this -> currentState = this -> statesMap.at(PATROLLING);
+	} else {
+		  this -> currentState = this -> statesMap.at(IDLE);
+	  }
 	
-	this->currentState->enter();
+	this -> currentState -> enter();
 }
 
-Enemy::~Enemy(){
-	if(this->currentState != nullptr){
-		this->currentState->exit();
-		this->currentState = nullptr;
+/*
+ * Method to destroy the enemy
+ */
+Enemy::~Enemy()
+{
+	//Attribute null to current state
+	if ( this -> currentState != nullptr )
+	{
+		this -> currentState -> exit();
+		this -> currentState = nullptr;
 	}
-
-	if(this->animation != nullptr){
-        delete this->animation;
-        this->animation = nullptr;
-    }
+  
+  //Attribute null to animation
+	if ( this -> animation != nullptr )
+	{
+    delete this -> animation;
+    this -> animation = nullptr;
+  }
 
 	destroyStates();
 }
 
-void Enemy::update(const double dt_){
-	
-	this->currentState->update(dt_);
+/*
+ * Method to update characteristics of the enemy
+ * @param dt : delta time (time elapsed)
+ */
+void Enemy::update( const double dt_)
+{	
+	//const double dt is passed as a parameter to know the time elapsed.
+	this -> currentState -> update( dt_);
 	forceMaxSpeed();
 
-	scoutPosition(dt_);
+	scoutPosition( dt_);
 
-	this->animation->update(this->animationClip, dt_);
+	this -> animation -> update( this -> animationClip, dt_);
 
 	updateBoundingBox();
-
+  
+  //Array to detect collision with enemy
 	const std::array<bool, CollisionSide::SOLID_TOTAL> detections = detectCollision();
 	handleCollision(detections);
 
-	updatePosition(dt_);
-
+	updatePosition( dt_);
 }
 
-void Enemy::render(const double cameraX_, const double cameraY_){
-
-	const double dx = this->x - cameraX_;
-	const double dy = this->y - cameraY_;
+/*
+ * Method to update characteristics of the enemy
+ * @param cameraX_ : Define the locate for the camera on the x-axis
+ * @param cameraY_ : Define the locate for the camera on the y-axis
+ */
+void Enemy::render( const double cameraX_, const double cameraY_)
+{ 
+	const double dx = this -> x - cameraX_; 
+	const double dy = this -> y - cameraY_;
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	// // Actual.
@@ -105,18 +138,24 @@ void Enemy::render(const double cameraX_, const double cameraY_){
 	// SDL_RenderFillRect(Window::getRenderer(), &boundingBox2);
 	// ///////////////////////////////////////////////////////////////////////////////////////////
 
-	if(this->sprite != nullptr){
+	if ( this -> sprite != nullptr )
+	{
 		SDL_RendererFlip flip = getFlip();
 
-		if(flip == SDL_FLIP_HORIZONTAL)
-			this->sprite->render(dx - 120, dy, &this->animationClip, false, 0.0, nullptr, flip);
-		else
-			this->sprite->render(dx, dy, &this->animationClip, false, 0.0, nullptr, flip);
+		if ( flip == SDL_FLIP_HORIZONTAL )
+		{
+			this -> sprite->render(dx - 120, dy, &this -> animationClip, false, 0.0, nullptr, flip);
+		} else {
+			  this -> sprite -> render(dx, dy, &this -> animationClip, false, 0.0, nullptr, flip);
+		  }
 	}
 }
 
-void Enemy::initializeStates(){
-	// Initialize all the states in Enemy here.
+/*
+ * Initialize all the states in Enemy here.
+ */
+void Enemy::initializeStates()
+{
 	ADD_STATE_INSERT(IDLE,         EStateIdle);
 	ADD_STATE_INSERT(CURIOUS,      EStateCurious);
 	ADD_STATE_INSERT(PATROLLING,   EStatePatrolling);
@@ -126,75 +165,125 @@ void Enemy::initializeStates(){
 	ADD_STATE_INSERT(DEAD,         EStateDead);
 }
 
-void Enemy::destroyStates(){
-	// Delete all the states in Enemy here.
+/*
+ * Delete all the states in Enemy here.
+ */
+void Enemy::destroyStates()
+{
 	std::map<EStates, StateEnemy*>::const_iterator it;
-	for(it = this->statesMap.begin(); it != this->statesMap.end(); it++){
+	for ( it = this -> statesMap.begin(); it != this -> statesMap.end(); it++ )
+	{
 		delete it->second;
 	}
 }
 
-void Enemy::changeState(const EStates state_){
-	this->currentState->exit();
-	this->currentState = this->statesMap.at(state_);
-	this->currentState->enter();
+/*
+ * Method used to exchange enemy of position
+ * @param state_ : Define state enemy 
+ */
+void Enemy::changeState( const EStates state_)
+{  
+	this -> currentState -> exit();
+	this -> currentState = this -> statesMap.at(state_);
+	this -> currentState -> enter();
 }
 
-void Enemy::handleCollision(std::array<bool, CollisionSide::SOLID_TOTAL> detections_){
-	if(detections_.at(CollisionSide::SOLID_TOP)){ 
-		this->vy = 0.0;
+/*
+ * Method used to check collision in enemy
+ * @param detections : Pass an array of array containing the type of collision.
+ */
+void Enemy::handleCollision( std::array<bool, CollisionSide::SOLID_TOTAL> detections_)
+{ 
+	//Collision on top
+	if ( detections_.at(CollisionSide::SOLID_TOP) )
+	{ 
+		this -> vy = 0.0;
 	}
-	if(detections_.at(CollisionSide::SOLID_BOTTOM)){
-		if(this->currentState == this->statesMap.at(EStates::AERIAL) || this->currentState == this->statesMap.at(EStates::DEAD)){
-			this->nextY -= fmod(this->nextY, 64.0) - 16.0;
-			this->vy = 0.0;
-			if(this->isDead()){
-				this->changeState(EStates::DEAD);
+	//Collision on bottom
+	if ( detections_.at(CollisionSide::SOLID_BOTTOM) )
+	{
+		if ( this -> currentState == this -> statesMap.at(EStates::AERIAL) || this -> currentState == this -> statesMap.at
+			(EStates::DEAD))
+		{
+			this -> nextY -= fmod( this -> nextY, 64.0 ) - 16.0;
+			this -> vy = 0.0;
+			if ( this -> isDead() )
+			{
+				this -> changeState(EStates::DEAD);
 			}
-			if(this->patrol){
-				this->changeState(EStates::PATROLLING);
-			}
-			else{
-				this->changeState(EStates::IDLE);
-				return;
-			}
+			if ( this -> patrol )
+			{
+				this -> changeState(EStates::PATROLLING);
+			} else {
+				  this -> changeState(EStates::IDLE);
+				  return;
+			  }
 		}
+	} else {
+		  if ( this -> currentState != this -> statesMap.at(EStates::AERIAL) )
+		  {
+			  changeState(EStates::AERIAL);
+		  }
+	  }
+	//Collision on left  
+	if ( detections_.at(CollisionSide::SOLID_LEFT) )
+	{
+		this -> nextX = this -> x;
+		this -> vx = 0.0;
 	}
-	else{
-		if(this->currentState != this->statesMap.at(EStates::AERIAL)){
-			changeState(EStates::AERIAL);
-		}
-	}
-	if(detections_.at(CollisionSide::SOLID_LEFT)){
-		this->nextX = this->x;
-		this->vx = 0.0;
-	}
-	if(detections_.at(CollisionSide::SOLID_RIGHT)){
-		this->nextX = this->x;
-		this->vx = -0.001;
+	//Collision on right
+	if ( detections_.at(CollisionSide::SOLID_RIGHT) )
+	{
+		this -> nextX = this -> x;
+		this -> vx = -0.001;
 	}
 }
 
-void Enemy::forceMaxSpeed(){
-	this->vx = (this->vx >= this->maxSpeed) ? this->maxSpeed : this->vx ;
-	this->vy = (this->vy >= this->maxSpeed) ? this->maxSpeed : this->vy ;
+/*
+ * Designates maximum velocity on the x-axis and y
+ */
+void Enemy::forceMaxSpeed()
+{
+	this -> vx = ( this -> vx >= this -> maxSpeed) ? this -> maxSpeed : this -> vx ;
+	this -> vy = ( this -> vy >= this -> maxSpeed) ? this -> maxSpeed : this -> vy ;
 }
 
-Animation *Enemy::getAnimation(){
-	return (this->animation);
+/*
+ * Reference the specific animation.
+ */
+Animation *Enemy::getAnimation()
+{
+	return ( this -> animation );
 }
 
-void Enemy::setDead(bool isDead_){
-	this->dead = isDead_;
+/*
+ * Setting enemy is dead
+ * @param isDead_ : It says if it is alive or dead
+ */
+void Enemy::setDead( bool isDead_)
+{
+	this -> dead = isDead_;
 }
 
-bool Enemy::isDead(){
-	return this->dead;
+/*
+ * Inform that enemy is dead
+ */
+bool Enemy::isDead()
+{
+	return this -> dead;
 }
 
-void Enemy::updateBoundingBox(){
-	this->boundingBox.x = (int) this->nextX + 40;
-	this->boundingBox.y = (int) this->nextY + 40;
-	this->boundingBox.w = 150;
-	this->boundingBox.h = 200;
+/*
+ * Method to delimit enemy dimensions update
+ */
+void Enemy::updateBoundingBox()
+{ 
+	//Bounding box at x position 
+	this -> boundingBox.x = (int) this -> nextX + 40;
+	//Bounding box at y position 
+	this -> boundingBox.y = (int) this -> nextY + 40;
+	//Bounding box at width  
+	this -> boundingBox.w = 150;
+	//Bounding box at height  
+	this -> boundingBox.h = 200;
 }

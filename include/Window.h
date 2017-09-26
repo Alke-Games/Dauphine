@@ -1,3 +1,11 @@
+/* Dauphine
+ * Universidade de Brasília - FGA
+ * Técnicas de Programação, 2/2017
+ * @Window.h
+ * File responsible for represents actual window that game runs on. 
+ * License: Copyright (C) 2014 Alke Games.
+ */
+
 #ifndef INCLUDE_WINDOW_H
 #define INCLUDE_WINDOW_H
 
@@ -5,11 +13,12 @@
 
 #include <string>
 
-/**
-* Represents actual window that game runs on.
-* Contains the SDL_Window and the SDL_Renderer, and methods related to these.
-*/
-class Window {
+/*
+ * Represents actual window that game runs on.
+ * Contains the SDL_Window and the SDL_Renderer, and methods related to these.
+ */
+class Window
+{
 
 	public:
 		/**
@@ -21,8 +30,8 @@ class Window {
 		* @note If omitted, window title will be "SDL Window".
 		* @see Window::initialize
 		*/
-		Window(const unsigned int width_, const unsigned int height_,
-			const std::string& title_ = "SDL Window");
+		Window( const unsigned int width_, const unsigned int height_,
+			const std::string &title_ = "SDL Window");
 
 		/**
 		* The destructor.
@@ -48,7 +57,7 @@ class Window {
 		* @todo Instead of directly choosing width and height, choose from a pre-defined list
 		* 	of resolutions.
 		*/
-		void resize(const unsigned int width_, const unsigned int height_);
+		void resize( const unsigned int width_, const unsigned int height_ );
 
 		/**
 		* Frees allocated members.
@@ -71,16 +80,16 @@ class Window {
 		/**
 		* @return The renderer attribute.
 		*/
-		static SDL_Renderer* getRenderer();
+		static SDL_Renderer *getRenderer();
 
-		static void getLogicalSize(int* w, int* h);
+		static void getLogicalSize( int *w, int *h );
 
 	private:
 		/**
 		* Creates the Window, with specified width and height.
 		* Can be used either as the creator, or as the resizer.
 		*/
-		void create(const unsigned int width_, const unsigned int height_);
+		void create( const unsigned int width_, const unsigned int height_ );
 
 		/**
 		* Rescales the renderization.
@@ -91,7 +100,7 @@ class Window {
 		* 	the size_ parameter is.
 		* @see SDL_RenderSetLogicalSize
 		*/
-		void rescale(unsigned int size_);
+		void rescale( unsigned int size_ );
 
 		const std::string windowTitle; /**< The game Window title. */
 		SDL_Window *sdlWindow; /**< The SDL window, that will be the actual game window. */

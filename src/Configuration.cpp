@@ -1,8 +1,16 @@
+/* Dauphine
+ * Universidade de Brasília - FGA
+ * Técnicas de Programação, 2/2017
+ * @Configuration.cpp
+ * Game configuration class
+ * License: Copyright (C) 2014 Alke Games.
+ */
+
 #include "Configuration.h"
 #include "LuaScript.h"
 
 
-// 16:10
+// Default screen ratio is 16:10
 const unsigned int Configuration::resolutionWidth = 192;
 const unsigned int Configuration::resolutionHeight = 108;
 
@@ -14,19 +22,20 @@ unsigned int Configuration::screenHeight = 0;
 unsigned int Configuration::cameraDistanceWidth = 0;
 unsigned int Configuration::cameraDistanceHeight = 0;
 
-
-void Configuration::initialize(){
-	/// @todo Make sure recieved ints are not negative.
-
-	LuaScript luaConfig("lua/Config.lua");
+// Starts the settings menu.
+void Configuration::initialize ()
+{
+	// Initializing all settings through the Lua.
+	LuaScript luaConfig( "lua/Config.lua" );
 
 	Configuration::maxFramerate =
-		(uint32_t) luaConfig.unlua_get<int>("config.maxFramerate");
+		(uint32_t) luaConfig.unlua_get < int > ( "config.maxFramerate" );
 
-	Configuration::windowTitle = luaConfig.unlua_get<std::string>("config.windowTitle");
+	Configuration::windowTitle =
+		luaConfig.unlua_get < std::string >( "config.windowTitle" );
 
 	Configuration::logicalRenderSize =
-		(unsigned int) luaConfig.unlua_get<int>("config.cameraDistance");
+		(unsigned int) luaConfig.unlua_get < int > ( "config.cameraDistance" );
 
 	Configuration::cameraDistanceWidth =
 		Configuration::resolutionWidth * Configuration::logicalRenderSize;
@@ -35,45 +44,63 @@ void Configuration::initialize(){
 		Configuration::resolutionHeight * Configuration::logicalRenderSize;
 
 	Configuration::screenWidth =
-		(unsigned int) luaConfig.unlua_get<int>("config.initialScreenSize.width");
+		(unsigned int) luaConfig.unlua_get < int > ( "config.initialScreenSize.width" );
 
 	Configuration::screenHeight =
-		(unsigned int) luaConfig.unlua_get<int>("config.initialScreenSize.height");
+		(unsigned int) luaConfig.unlua_get < int > ( "config.initialScreenSize.height" );
 
 }
 
-unsigned int Configuration::getResolutionWidth(){
+// @return The game's width resolution. (16)
+unsigned int Configuration::getResolutionWidth ()
+{
 	return Configuration::resolutionWidth;
 }
 
-unsigned int Configuration::getResolutionHeight(){
+// @return The game's height resolution. (10)
+unsigned int Configuration::getResolutionHeight ()
+{
 	return Configuration::resolutionHeight;
 }
 
-uint32_t Configuration::getMaxFramerate(){
+// @return The game's max framerate
+uint32_t Configuration::getMaxFramerate ()
+{
 	return Configuration::maxFramerate;
 }
 
-std::string Configuration::getWindowTitle(){
+// @return The game window's title.
+std::string Configuration::getWindowTitle ()
+{
 	return Configuration::windowTitle;
 }
 
-unsigned int Configuration::getLogicalRenderSize(){
+// @return The size of the logical rendering.
+unsigned int Configuration::getLogicalRenderSize ()
+{
 	return Configuration::logicalRenderSize;
 }
 
-unsigned int Configuration::getScreenWidth(){
+// @return The screen width.
+unsigned int Configuration::getScreenWidth ()
+{
 	return Configuration::screenWidth;
 }
 
-unsigned int Configuration::getScreenHeight(){
+// @return The screen height.
+unsigned int Configuration::getScreenHeight ()
+{
 	return Configuration::screenHeight;
 }
 
-unsigned int Configuration::getCameraDistanceWidth(){
+// @return The width distance of the camera.
+unsigned int Configuration::getCameraDistanceWidth ()
+{
 	return Configuration::cameraDistanceWidth;
 }
 
-unsigned int Configuration::getCameraDistanceHeight(){
+// @return The height distance of the camera.
+unsigned int Configuration::getCameraDistanceHeight ()
+{
 	return Configuration::cameraDistanceHeight;
 }

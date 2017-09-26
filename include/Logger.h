@@ -1,3 +1,11 @@
+/* Dauphine
+ * Universidade de Brasília - FGA
+ * Técnicas de Programação, 2/2017
+ * @Logger.h
+ * File responsible for implementing the real-time history that will be displayed on the console
+ * during the course of the game. 
+ */
+
 #ifndef INCLUDE_LOGGER_H
 #define INCLUDE_LOGGER_H
 
@@ -5,29 +13,31 @@
 #include <sstream>
 #include <cstdio>
 
-enum LogLevel : uint8_t {
+enum LogLevel : uint8_t 
+{
 	INFO,
 	WARN,
 	ERROR,
 	DEBUG
 };
 
-#define Log(level) Logger().log(level)
+#define Log( level ) Logger ().log ( level )
 
-/**
-* Class used for logging.
-*
-*/
-class Logger {
+/*
+ * Class used for logging.
+ */
+class Logger 
+{
 
 	public:
-		Logger();
-		virtual ~Logger();
 
-		std::ostringstream& log(const LogLevel level_);
+		Logger ();
+		virtual ~Logger ();
+
+		std::ostringstream &log( const LogLevel level_ );
 
 	private:
-		std::string levelToString(const LogLevel level_);
+		std::string levelToString ( const LogLevel level_ );
 
 		std::ostringstream os;
 

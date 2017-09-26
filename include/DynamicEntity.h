@@ -1,3 +1,12 @@
+/* Dauphine
+ * Universidade de Brasília - FGA
+ * Técnicas de Programação, 2/2017
+ * @DynamicEntity.h
+ * Subclass of Entity.
+ * The objects of this class are entities, but have physics applied to them (such as velocity).
+ * License: Copyright (C) 2014 Alke Games.
+  */
+
 #ifndef INCLUDE_DYNAMICENTITY_H
 #define INCLUDE_DYNAMICENTITY_H
 
@@ -5,19 +14,23 @@
 #include "Crosshair.h"
 #include <array>
 
-enum CollisionSide : uint8_t {
+enum CollisionSide : uint8_t
+{
+
 	SOLID_TOP = 0,
 	SOLID_BOTTOM,
 	SOLID_RIGHT,
 	SOLID_LEFT,
 	SOLID_TOTAL
+
 };
 
 /**
 * Subclass of Entity.
 * The objects of this class are entities, but have physics applied to them (such as velocity).
 */
-class DynamicEntity : public Entity {
+class DynamicEntity : public Entity
+{
 
 	public:
 		/**
@@ -27,43 +40,43 @@ class DynamicEntity : public Entity {
 		* @param y_ : position in y axis.
 		* @param sprite_ : which sprite to use.
 		*/
-		DynamicEntity(const double x_, const double y_, const std::string& path_);
+		DynamicEntity ( const double x_, const double y_, const std::string &path_ );
 
 		/**
 		* The destructor.
 		*/
-		virtual ~DynamicEntity();
+		virtual ~DynamicEntity ();
 
-		virtual void jump();
-		virtual void applyGravity();
-		virtual void move(const bool movingLeft_, const bool movingRight_);
-		virtual void moveVertical(const bool movingUp_, const bool movingDown_);
-		virtual void slowVx();
-		virtual void slowVy();
-		virtual void roll();
-		virtual void aim(Crosshair* const crosshair, double direction);
+		virtual void jump ();
+		virtual void applyGravity ();
+		virtual void move ( const bool movingLeft_, const bool movingRight_ );
+		virtual void moveVertical ( const bool movingUp_, const bool movingDown_ );
+		virtual void slowVx ();
+		virtual void slowVy ();
+		virtual void roll ();
+		virtual void aim ( Crosshair *const crosshair, double direction );
 
 		/**
 		* @param width_,height_ : Tells the player what the width and height of the level is.
 		* @see Level::update()
 		*/
-		virtual void setLevelWH(const unsigned int width_, const unsigned int height_);
+		virtual void setLevelWH ( const unsigned int width_, const unsigned int height_ );
 
-		double vx; /**< The dynamic entity's speed on the x axis. */
-		double vy; /**< The dynamic entity's speed on the x axis. */
-		double speed; /**< Speed that moves dynamic entity on input. */
-		double maxSpeed; /**< Dynamic entity max speed. */		
-		bool isGrounded; /**< Check for if the dynamic entity is on the ground. */
-		double nextX;
-		double nextY;
-		bool reachedLevelEnd;
+		double vx; // The dynamic entity's speed on the x axis.
+		double vy; // The dynamic entity's speed on the y axis.
+		double speed; // Speed that moves dynamic entity on input.
+		double maxSpeed; // Dynamic entity max speed.
+		bool isGrounded; // Check for if the dynamic entity is on the ground.
+		double nextX; // Used to update next position on x-axis.
+		double nextY; // Used to update next position on y-axis.
+		bool reachedLevelEnd; // Boolean value to evaluate the level end.
 
 	    bool activated;
 	    int strength;
 	    int distance;
 	    double flightTime;
 
-	    bool isClimbing;
+	    bool isClimbing; // Boolean value evaluate the character's climbing condition
 
 	protected:
 		/**
@@ -72,26 +85,26 @@ class DynamicEntity : public Entity {
 		* @param dt_ : Delta time. Time elapsed between one frame and the other, independent
 		* 	of processing speed.
 		*/
-		virtual void updatePosition(const double dt_);
+		virtual void updatePosition ( const double dt_ );
 
-		virtual void scoutPosition(const double dt_); 
+		virtual void scoutPosition ( const double dt_ );
 
 		/**
 		* @return A bool array with the sides the DynamicEntity collided.
 		*/
-		virtual std::array<bool, CollisionSide::SOLID_TOTAL> detectCollision();
+		virtual std::array < bool, CollisionSide::SOLID_TOTAL > detectCollision ();
 
 		/**
 		* Handles the collision.
 		*/
-		virtual void handleCollision(std::array<bool, CollisionSide::SOLID_TOTAL> detections_) = 0;
+		virtual void handleCollision (std::array < bool, CollisionSide::SOLID_TOTAL > detections_ ) = 0;
 
-		virtual SDL_RendererFlip getFlip();
+		virtual SDL_RendererFlip getFlip ();
 
-		virtual void updateBoundingBox() = 0;
+		virtual void updateBoundingBox () = 0;
 
-		unsigned int levelW; /**< The width of the level. */
-		unsigned int levelH; /**< The height of the level. */
+		unsigned int levelW; // The width of the level.
+		unsigned int levelH; // The height of the level.
 
 };
 
